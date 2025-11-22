@@ -1,4 +1,4 @@
-name: Ruff Linter
+name: Linting and Formatting
 
 on:
   push:
@@ -31,3 +31,6 @@ jobs:
 
       - name: Run Ruff Linter
         run: uv run ruff check --fix .
+
+      - name: Run Black Formatter
+        run: uv run black --check --line-length=88 .
