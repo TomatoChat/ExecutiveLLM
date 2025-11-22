@@ -1,0 +1,23 @@
+[tool.ruff]
+line-length = 88
+fix = true
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]  # "E" = pycodestyle, "F" = pyflakes, "I" = isort
+
+[tool.setuptools]
+packages = []
+
+[project]
+name = "ExecutiveLLM"
+version = "1.0.0"
+description = "ExecutiveLLM - Benchmarks for LLMs in management and decision making tasks"
+requires-python = ">=3.8"
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.1.0",
+    "pytest>=7.0.0",
+    "black>=23.0.0",
+    "ty==0.1.0",
+]
