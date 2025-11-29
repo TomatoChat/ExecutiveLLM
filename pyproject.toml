@@ -21,3 +21,8 @@ dev = [
     "black>=23.0.0",
     "ty==0.0.1a27",
 ]
+
+[tool.ty.src]
+root = "benchmarks/axl-bench"
+include = ["src/**/*.py"]
+exclude = []

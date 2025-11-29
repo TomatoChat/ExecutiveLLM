@@ -1,11 +1,11 @@
-from typing import ClassVar, List, Optional
+from typing import List, Optional
 
 from axelrod.action import Action
 from pydantic import BaseModel
 
 
 class PromptContext(BaseModel):
-    promptTemplate: ClassVar[str]
+    promptTemplate: str
     personalHistory: List[Action] = []
     opponentHistory: List[Action] = []
     historyLastTurns: Optional[int] = None
@@ -20,7 +20,7 @@ class PromptContext(BaseModel):
         Otherwise, the full history is used.
 
         Args:
-            promptTemplate: A string containing placeholders like {numTurns}, {history}, etc.
+            promptTemplate: A string containing placeholders
 
         Returns:
             The formatted prompt string
