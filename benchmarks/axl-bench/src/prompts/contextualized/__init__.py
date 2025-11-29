@@ -1,0 +1,19 @@
+from .strategyPredeterminedTurnsFullHistory import (
+    PROMPT as STRATEGY_PREDETERMINED_TURNS_FULL_HISTORY,
+)
+from .strategyPredeterminedTurnsLastTurns import (
+    PROMPT as STRATEGY_PREDETERMINED_TURNS_LAST_TURNS,
+)
+from .strategyProbabilisticEndFullHistory import (
+    PROMPT as STRATEGY_PROBABILISTIC_END_FULL_HISTORY,
+)
+from .strategyProbabilisticEndLastTurns import (
+    PROMPT as STRATEGY_PROBABILISTIC_END_LAST_TURNS,
+)
+
+__all__ = [
+    "STRATEGY_PREDETERMINED_TURNS_FULL_HISTORY",
+    "STRATEGY_PREDETERMINED_TURNS_LAST_TURNS",
+    "STRATEGY_PROBABILISTIC_END_FULL_HISTORY",
+    "STRATEGY_PROBABILISTIC_END_LAST_TURNS",
+]

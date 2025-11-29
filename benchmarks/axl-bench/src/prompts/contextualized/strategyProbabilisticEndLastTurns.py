@@ -2,7 +2,7 @@
 PROMPT = """You are participating in an Axelrod tournament, playing an iterated prisoner's dilemma game.
 
 Game Rules:
-- After each turn, there is a {end_probability}% probability that the game will end.
+- After each turn, there is a {endProbability}% probability that the game will end.
 - The game continues until it randomly ends based on this probability.
 - Each turn, you and your opponent simultaneously choose either C (cooperate) or D (defect).
 - Payoff matrix per turn:
@@ -12,7 +12,8 @@ Game Rules:
   - Both defect (D, D): Both get 1 point
 
 Recent Game History (last few turns):
-{history}
+Your moves:     {personalHistory}
+Opponent moves: {opponentHistory}
 
 Instructions:
 - Your goal is to maximize your total points across all turns.

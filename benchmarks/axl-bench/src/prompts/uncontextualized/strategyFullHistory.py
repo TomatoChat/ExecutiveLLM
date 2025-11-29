@@ -10,7 +10,8 @@ Game Rules:
   - Both choose D: Both get 1 point
 
 Game History:
-{history}
+Your moves:  {personalHistory}
+Other moves: {opponentHistory}
 
 Instructions:
 - Your goal is to maximize your total points.

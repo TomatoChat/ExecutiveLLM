@@ -12,7 +12,8 @@ Game Rules:
   - Both defect (D, D): Both get 1 point
 
 Game History:
-{history}
+Your moves:     {personalHistory}
+Opponent moves: {opponentHistory}
 
 Instructions:
 - Your goal is to maximize your total points across all turns.
