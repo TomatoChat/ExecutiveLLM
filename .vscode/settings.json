@@ -1,0 +1,25 @@
+{
+  // format on save
+  "editor.formatOnSave": true,
+  "editor.tabSize": 4,
+
+  // run import sorter on save
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "always",
+    "source.fixAll": "always"
+  },
+
+  // Ruff settings
+  "ruff.enable": true,
+  "ruff.organizeImports": true,
+
+  // Python-specific settings
+  "[python]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "always",
+      "source.fixAll": "always"
+    }
+  }
+}

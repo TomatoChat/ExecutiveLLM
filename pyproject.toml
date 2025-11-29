@@ -12,12 +12,17 @@ packages = []
 name = "ExecutiveLLM"
 version = "1.0.0"
 description = "ExecutiveLLM - Benchmarks for LLMs in management and decision making tasks"
-requires-python = ">=3.8"
+requires-python = ">=3.13"
 
 [project.optional-dependencies]
 dev = [
     "ruff>=0.1.0",
     "pytest>=7.0.0",
     "black>=23.0.0",
-    "ty==0.1.0",
+    "ty==0.0.1a27",
 ]
+
+[tool.ty.src]
+root = "benchmarks/axl-bench"
+include = ["src/**/*.py"]
+exclude = []
