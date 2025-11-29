@@ -5,6 +5,7 @@ from anthropic import Anthropic
 from axelrod import Action, Player
 from dotenv import load_dotenv
 
+from ..helpers.anthropic import runPrompt
 from ..models import ClaudeModel, PromptContext
 
 load_dotenv()
@@ -31,7 +32,7 @@ class CompletionLLM(Player):
         endProbability: Optional[float] = None,
         # Anthropic parameters
         apiKey: Optional[str] = None,
-        model: Optional[ClaudeModel] = ClaudeModel.CLAUDE_3_7_SONNET_20250219,
+        model: Optional[ClaudeModel] = None,
         maxTokens: Optional[int] = 1024,
         temperature: Optional[float] = 1.0,
     ):
@@ -55,6 +56,10 @@ class CompletionLLM(Player):
         self.apiKey: str = (
             apiKey if apiKey is not None else os.getenv("ANTHROPIC_API_KEY")
         )
+        # Set default model if none provided
+        if model is None:
+            # Get first available model from ClaudeModel enum
+            model = next(iter(ClaudeModel))
         self.model: ClaudeModel = model
         self.maxTokens: int = maxTokens
         self.temperature: float = temperature
@@ -82,7 +87,15 @@ class CompletionLLM(Player):
             numTurns=self.numTurns,
             endProbability=self.endProbability,
         )
-        move: str = self._runPrompt()
+        move: str = runPrompt(
+            client=self.client,
+            model=self.model.value,
+            maxTokens=self.maxTokens,
+            temperature=self.temperature,
+            messages=[
+                {"role": "user", "content": self.promptContext.formatPrompt()},
+            ],
+        )
 
         if move == "C":
             return Action.C
@@ -90,21 +103,3 @@ class CompletionLLM(Player):
             return Action.D
         else:
             raise ValueError(f"Invalid move: {move}")
-
-    def _runPrompt(self) -> str:
-        """
-        Format the prompt and send it to Claude API for completion.
-
-        Returns:
-            The text response from Claude
-        """
-
-        response = self.client.messages.create(
-            model=self.model.value,
-            max_tokens=self.maxTokens,
-            messages=[
-                {"role": "user", "content": self.promptContext.formatPrompt()},
-            ],
-        )
-
-        return response.content[0].text

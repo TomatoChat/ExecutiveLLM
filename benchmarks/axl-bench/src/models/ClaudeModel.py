@@ -1,51 +1,49 @@
-import os
 from enum import Enum
-from typing import List
 
-from anthropic import Anthropic
-from anthropic.types import ModelInfo
 from dotenv import load_dotenv
 
+from ..helpers.anthropic import getModelIds
 
-def getAnthropicModels() -> List[ModelInfo]:
+load_dotenv()
+
+
+class ClaudeModel(Enum):
     """
-    Retrieve the list of available Anthropic models from the API.
-
-    Returns:
-        List of ModelInfo objects containing model information
+    Enum of available Claude models.
+    This is dynamically populated from the Anthropic API at import time.
     """
-    load_dotenv()
-    client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
-    page = client.models.list()
 
-    return page.data
+    def __init__(self, modelId: str):
+        self._value_ = modelId
 
-
-def getModelIds() -> List[str]:
-    """
-    Retrieve just the model IDs from the Anthropic API.
-
-    Returns:
-        List of model ID strings
-    """
-    models = getAnthropicModels()
-
-    return [model.id for model in models]
+    @classmethod
+    def _missing_(cls, value):
+        """Allow creation of new members dynamically."""
+        return None
 
 
-def _modelIdToEnumName(modelId: str) -> str:
-    """
-    Convert a model ID to a valid Python enum name.
+# Dynamically populate the enum with available models
+def _populateClaudeModel():
+    """Populate ClaudeModel enum with available models from Anthropic API."""
+    modelIds = getModelIds()
 
-    Args:
-        model_id: The model ID string (e.g., "claude-3-5-sonnet-20241022")
+    for modelId in modelIds:
+        enumName = modelId.upper().replace("-", "_").replace(".", "_")
 
-    Returns:
-        Valid enum name (e.g., "CLAUDE_3_5_SONNET_20241022")
-    """
-    return modelId.upper().replace("-", "_").replace(".", "_")
+        if not hasattr(ClaudeModel, enumName):
+            extendEnum(ClaudeModel, enumName, modelId)
 
 
-modelIds = getModelIds()
-enumsDict = {_modelIdToEnumName(modelId): modelId for modelId in modelIds}
-ClaudeModel = Enum("ClaudeModel", enumsDict)
+def extendEnum(enumClass, name, value):
+    """Extend an enum with a new member."""
+    newMember = object.__new__(enumClass)
+    newMember._name_ = name
+    newMember._value_ = value
+
+    setattr(enumClass, name, newMember)
+    enumClass._member_names_.append(name)
+    enumClass._member_map_[name] = newMember
+    enumClass._value2member_map_[value] = newMember
+
+
+_populateClaudeModel()
