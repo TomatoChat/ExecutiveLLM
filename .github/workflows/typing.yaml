@@ -16,7 +16,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.13"
 
       - name: Install uv
         uses: astral-sh/setup-uv@v4
@@ -24,7 +24,7 @@ jobs:
           version: "latest"
 
       - name: Install dependencies
-        run: uv pip install -e ".[dev]"
+        run: uv sync --extra dev
 
       - name: Run Ty Type Checker
         run: uv run ty check
