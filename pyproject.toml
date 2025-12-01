@@ -13,6 +13,14 @@ name = "ExecutiveLLM"
 version = "1.0.0"
 description = "ExecutiveLLM - Benchmarks for LLMs in management and decision making tasks"
 requires-python = ">=3.13"
+dependencies = [
+    "anthropic>=0.39.0",
+    "openai>=1.0.0",
+    "google-generativeai>=0.8.0",
+    "python-dotenv>=1.0.0",
+    "axelrod>=4.0.0",
+    "pydantic>=2.0.0",
+]
 
 [project.optional-dependencies]
 dev = [
@@ -22,7 +30,9 @@ dev = [
     "ty==0.0.1a27",
 ]
 
+[tool.ty.environment]
+root = ["benchmarks/axl-bench"]
+
 [tool.ty.src]
-root = "benchmarks/axl-bench"
 include = ["src/**/*.py"]
 exclude = []

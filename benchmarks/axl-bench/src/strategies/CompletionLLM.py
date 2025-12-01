@@ -1,12 +1,10 @@
-import os
 from typing import Optional, Union
 
-from anthropic import Anthropic
 from axelrod import Action, Player
 from dotenv import load_dotenv
 
-from ..helpers.anthropic import runPrompt
-from ..models import ClaudeModel, PromptContext
+from ..helpers import runPrompt
+from ..models import ClaudeModel, GeminiModel, OpenAiModel, PromptContext
 
 load_dotenv()
 
@@ -19,7 +17,7 @@ class CompletionLLM(Player):
     def __init__(
         self,
         # Axelrod parameters
-        name: Optional[str] = "OpenAI",
+        name: Optional[str] = "CompletionLLM",
         memoryDepth: Optional[Union[int, float]] = float("inf"),
         stochastic: Optional[bool] = True,
         inspectsSource: Optional[bool] = False,
@@ -30,9 +28,10 @@ class CompletionLLM(Player):
         historyLastTurns: Optional[int] = None,
         numTurns: Optional[int] = None,
         endProbability: Optional[float] = None,
-        # Anthropic parameters
-        apiKey: Optional[str] = None,
-        model: Optional[ClaudeModel] = None,
+        # Model parameters
+        model: Union[
+            ClaudeModel, OpenAiModel, GeminiModel
+        ] = GeminiModel.GEMINI_2_5_FLASH_LITE,  # type: ignore
         maxTokens: Optional[int] = 1024,
         temperature: Optional[float] = 1.0,
     ):
@@ -52,18 +51,10 @@ class CompletionLLM(Player):
         self.historyLastTurns: Optional[int] = historyLastTurns
         self.numTurns: Optional[int] = numTurns
         self.endProbability: Optional[float] = endProbability
-        # Anthropic parameters
-        self.apiKey: str = (
-            apiKey if apiKey is not None else os.getenv("ANTHROPIC_API_KEY")
-        )
-        # Set default model if none provided
-        if model is None:
-            # Get first available model from ClaudeModel enum
-            model = next(iter(ClaudeModel))
-        self.model: ClaudeModel = model
+        # Model parameters
+        self.model: Union[ClaudeModel, OpenAiModel, GeminiModel] = model
         self.maxTokens: int = maxTokens
         self.temperature: float = temperature
-        self.client = Anthropic(api_key=self.apiKey)
 
     def __repr__(self) -> str:
         return self.name
@@ -88,7 +79,6 @@ class CompletionLLM(Player):
             endProbability=self.endProbability,
         )
         move: str = runPrompt(
-            client=self.client,
             model=self.model.value,
             maxTokens=self.maxTokens,
             temperature=self.temperature,
