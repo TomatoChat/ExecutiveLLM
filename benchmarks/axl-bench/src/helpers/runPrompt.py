@@ -1,9 +1,9 @@
 import os
 from typing import Dict, List
 
-import google.generativeai as genai
 from anthropic import Anthropic
 from dotenv import load_dotenv
+from google import genai
 from openai import OpenAI
 
 from ..models import ClaudeModel, GeminiModel, OpenAiModel
@@ -19,6 +19,7 @@ def runPrompt(
     maxTokens: int,
     temperature: float,
     messages: List[Dict[str, str]],
+    enableGrounding: bool = False,
 ) -> str:
     """
     Gateway function to run a prompt through the appropriate LLM API.
@@ -31,6 +32,7 @@ def runPrompt(
         maxTokens: Maximum number of tokens to generate
         temperature: Temperature for sampling (0.0 to 1.0)
         messages: List of message dictionaries with 'role' and 'content' keys
+        enableGrounding: Whether to enable web search/grounding (default: False)
 
     Returns:
         The generated text response from the model
@@ -41,16 +43,21 @@ def runPrompt(
     # Detect provider based on model name
     if any(model == member.value for member in ClaudeModel):
         client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
-        return anthropicRunPrompt(client, model, maxTokens, temperature, messages)
+        return anthropicRunPrompt(
+            client, model, maxTokens, temperature, messages, enableGrounding
+        )
 
     elif any(model == member.value for member in OpenAiModel):
         client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-        return openaiRunPrompt(client, model, maxTokens, temperature, messages)
+        return openaiRunPrompt(
+            client, model, maxTokens, temperature, messages, enableGrounding
+        )
 
     elif any(model == member.value for member in GeminiModel):
-        genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-        client = genai.GenerativeModel(model)
-        return geminiRunPrompt(client, model, maxTokens, temperature, messages)
+        client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+        return geminiRunPrompt(
+            client, model, maxTokens, temperature, messages, enableGrounding
+        )
 
     else:
         raise ValueError(

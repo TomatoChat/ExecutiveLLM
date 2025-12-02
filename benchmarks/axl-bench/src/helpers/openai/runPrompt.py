@@ -2,6 +2,8 @@ from typing import Dict, List
 
 from openai import OpenAI
 
+from ...models.OpenAiModelGrounding import OpenAiModelGrounding
+
 
 def runPrompt(
     client: OpenAI,
@@ -9,15 +11,34 @@ def runPrompt(
     maxTokens: int,
     temperature: float,
     messages: List[Dict[str, str]],
+    enableGrounding: bool = False,
 ) -> str:
     """
     Run a prompt through the OpenAI API.
+
+    Args:
+        client: OpenAI client instance
+        model: Model identifier
+        maxTokens: Maximum tokens to generate
+        temperature: Sampling temperature
+        messages: List of message dictionaries
+        enableGrounding: Enable web search if supported by model
+
+    Returns:
+        Generated text response
     """
-    response = client.chat.completions.create(
-        model=model,
-        max_tokens=maxTokens,
-        temperature=temperature,
-        messages=messages,
-    )
+    requestParams = {
+        "model": model,
+        "max_tokens": maxTokens,
+        "temperature": temperature,
+        "messages": messages,
+    }
+
+    if enableGrounding and any(
+        model == member.value for member in OpenAiModelGrounding
+    ):
+        requestParams["tools"] = [{"type": "web_search"}]
+
+    response = client.chat.completions.create(**requestParams)
 
     return response.choices[0].message.content

@@ -1,32 +1,64 @@
 from typing import Dict, List
 
-import google.generativeai as genai
+from google import genai
+from google.genai import types
+
+from ...models.GeminiModelGrounding import GeminiModelGrounding
 
 
 def runPrompt(
-    client: genai.GenerativeModel,
+    client: genai.Client,
     model: str,
     maxTokens: int,
     temperature: float,
     messages: List[Dict[str, str]],
+    enableGrounding: bool = False,
 ) -> str:
     """
     Run a prompt through the Gemini API.
+
+    Args:
+        client: Gemini Client instance
+        model: Model identifier
+        maxTokens: Maximum tokens to generate
+        temperature: Sampling temperature
+        messages: List of message dictionaries
+        enableGrounding: Enable Google Search grounding if supported by model
+
+    Returns:
+        Generated text response
     """
-    geminiMessages = []
+    if len(messages) == 1:
+        contents = messages[0]["content"]
+    else:
+        geminiMessages = []
 
-    for msg in messages:
-        role = "user" if msg["role"] == "user" else "model"
-        geminiMessages.append({"role": role, "parts": [msg["content"]]})
+        for msg in messages:
+            role = "user" if msg["role"] == "user" else "model"
+            geminiMessages.append(
+                types.Content(role=role, parts=[types.Part(text=msg["content"])])
+            )
+        contents = geminiMessages
 
-    fullModelName = model if model.startswith("models/") else f"models/{model}"
-    modelInstance = genai.GenerativeModel(fullModelName)
-    response = modelInstance.generate_content(
-        contents=geminiMessages,
-        generation_config=genai.GenerationConfig(
-            max_output_tokens=maxTokens,
+    # Build config with grounding if enabled
+    if enableGrounding and any(
+        model.replace("models/", "") == member.value for member in GeminiModelGrounding
+    ):
+        config = types.GenerateContentConfig(
             temperature=temperature,
-        ),
+            max_output_tokens=maxTokens,
+            tools=[types.Tool(google_search=types.GoogleSearch())],
+        )
+    else:
+        config = types.GenerateContentConfig(
+            temperature=temperature,
+            max_output_tokens=maxTokens,
+        )
+
+    response = client.models.generate_content(
+        model=model,
+        contents=contents,
+        config=config,
     )
 
-    return response.text
+    return response.text or ""
