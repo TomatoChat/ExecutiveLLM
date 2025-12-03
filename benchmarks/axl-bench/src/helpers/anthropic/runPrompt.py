@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from anthropic import Anthropic
 
@@ -12,6 +12,7 @@ def runPrompt(
     temperature: float,
     messages: List[Dict[str, str]],
     enableGrounding: bool = False,
+    countryCode: Optional[str] = None,
 ) -> str:
     """
     Run a prompt through the Anthropic API.
@@ -23,6 +24,7 @@ def runPrompt(
         temperature: Sampling temperature
         messages: List of message dictionaries
         enableGrounding: Enable web search if supported by model
+        countryCode: ISO 3166-1 alpha-2 country code for web search location
 
     Returns:
         Generated text response
@@ -37,9 +39,20 @@ def runPrompt(
     if enableGrounding and any(
         model == member.value for member in ClaudeModelGrounding
     ):
-        requestParams["tools"] = [
-            {"type": "web_search_20250305", "name": "web_search", "max_uses": 5}
-        ]
+        # Build web search tool configuration
+        webSearchTool = {
+            "type": "web_search_20250305",
+            "name": "web_search",
+            "max_uses": 5,
+        }
+
+        if countryCode:
+            webSearchTool["user_location"] = {
+                "type": "approximate",
+                "country": countryCode,
+            }
+
+        requestParams["tools"] = [webSearchTool]
 
     response = client.messages.create(**requestParams)
 

@@ -34,11 +34,13 @@ def runPrompt(
         "messages": messages,
     }
 
+    # Enable web search if supported by the model
     if enableGrounding and any(
         model == member.value for member in OpenAiModelGrounding
     ):
         requestParams["tools"] = [{"type": "web_search"}]
+        response = client.chat.completions.create(**requestParams)
+    else:
+        response = client.chat.completions.create(**requestParams)
 
-    response = client.chat.completions.create(**requestParams)
-
-    return response.choices[0].message.content
+    return response.choices[0].message.content or ""
