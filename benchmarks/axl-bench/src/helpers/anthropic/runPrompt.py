@@ -3,8 +3,7 @@ from typing import Any, Dict, List, Optional
 from anthropic import Anthropic
 from anthropic.types import TextBlock
 
-from ...models import Message
-from ...models.ClaudeModelGrounding import ClaudeModelGrounding
+from ...models import ClaudeModelGrounding, Message
 
 
 def runPrompt(
