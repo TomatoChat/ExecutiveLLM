@@ -30,4 +30,4 @@ jobs:
         run: uv sync --extra dev
 
       - name: Run Ty Type Checker
-        run: uv run ty check
+        run: uv run ty check .

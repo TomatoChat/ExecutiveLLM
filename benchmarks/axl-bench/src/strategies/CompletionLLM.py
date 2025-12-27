@@ -4,7 +4,7 @@ from axelrod import Action, Player
 from dotenv import load_dotenv
 
 from ..helpers import runPrompt
-from ..models import ClaudeModel, GeminiModel, OpenAiModel, PromptContext
+from ..models import ClaudeModel, GeminiModel, Message, OpenAiModel, PromptContext
 
 load_dotenv()
 
@@ -31,7 +31,7 @@ class CompletionLLM(Player):
         # Model parameters
         model: Union[
             ClaudeModel, OpenAiModel, GeminiModel
-        ] = GeminiModel.GEMINI_2_5_FLASH_LITE,  # type: ignore
+        ] = GeminiModel.GEMINI_2_5_FLASH_LITE,
         maxTokens: Optional[int] = 1024,
         temperature: Optional[float] = 1.0,
     ):
@@ -83,7 +83,7 @@ class CompletionLLM(Player):
             maxTokens=self.maxTokens,
             temperature=self.temperature,
             messages=[
-                {"role": "user", "content": self.promptContext.formatPrompt()},
+                Message(role="user", content=self.promptContext.formatPrompt()),
             ],
         )
 

@@ -1,9 +1,10 @@
 from enum import Enum
 
 
-class GeminiModel(Enum):
+class GeminiModelGrounding(Enum):
     """
-    Enum of available Gemini models.
+    Enum of Gemini models that support Google Search grounding.
+    Source: https://ai.google.dev/gemini-api/docs/google-search
     """
 
     GEMINI_2_5_PRO = "gemini-2.5-pro"
