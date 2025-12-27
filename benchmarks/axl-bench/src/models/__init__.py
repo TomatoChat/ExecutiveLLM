@@ -2,6 +2,7 @@ from .ClaudeModel import ClaudeModel
 from .ClaudeModelGrounding import ClaudeModelGrounding
 from .GeminiModel import GeminiModel
 from .GeminiModelGrounding import GeminiModelGrounding
+from .Message import Message
 from .OpenAiModel import OpenAiModel
 from .OpenAiModelGrounding import OpenAiModelGrounding
 from .PromptContext import PromptContext
@@ -14,4 +15,5 @@ __all__ = [
     "ClaudeModelGrounding",
     "GeminiModelGrounding",
     "OpenAiModelGrounding",
+    "Message",
 ]

@@ -1,8 +1,9 @@
-from typing import Dict, List
+from typing import List
 
 from google import genai
 from google.genai import types
 
+from ...models import Message
 from ...models.GeminiModelGrounding import GeminiModelGrounding
 
 
@@ -11,7 +12,7 @@ def runPrompt(
     model: str,
     maxTokens: int,
     temperature: float,
-    messages: List[Dict[str, str]],
+    messages: List[Message],
     enableGrounding: bool = False,
 ) -> str:
     """
@@ -29,20 +30,21 @@ def runPrompt(
         Generated text response
     """
     if len(messages) == 1:
-        contents = messages[0]["content"]
+        contents = messages[0].content
     else:
         geminiMessages = []
 
         for msg in messages:
-            role = "user" if msg["role"] == "user" else "model"
+            role = "user" if msg.role == "user" else "model"
             geminiMessages.append(
-                types.Content(role=role, parts=[types.Part(text=msg["content"])])
+                types.Content(role=role, parts=[types.Part(text=msg.content)])
             )
         contents = geminiMessages
 
     # Build config with grounding if enabled
     if enableGrounding and any(
-        model.replace("models/", "") == member.value for member in GeminiModelGrounding
+        model.replace("models/", "").startswith(member.value)
+        for member in GeminiModelGrounding
     ):
         config = types.GenerateContentConfig(
             temperature=temperature,

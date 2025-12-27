@@ -1,7 +1,9 @@
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 from anthropic import Anthropic
+from anthropic.types import TextBlock
 
+from ...models import Message
 from ...models.ClaudeModelGrounding import ClaudeModelGrounding
 
 
@@ -10,7 +12,7 @@ def runPrompt(
     model: str,
     maxTokens: int,
     temperature: float,
-    messages: List[Dict[str, str]],
+    messages: List[Message],
     enableGrounding: bool = False,
     countryCode: Optional[str] = None,
 ) -> str:
@@ -22,24 +24,25 @@ def runPrompt(
         model: Model identifier
         maxTokens: Maximum tokens to generate
         temperature: Sampling temperature
-        messages: List of message dictionaries
+        messages: Text-only messages (role + content)
         enableGrounding: Enable web search if supported by model
         countryCode: ISO 3166-1 alpha-2 country code for web search location
 
     Returns:
         Generated text response
     """
-    requestParams = {
+
+    textParts: List[str] = []
+    requestParams: Dict[str, Any] = {
         "model": model,
         "max_tokens": maxTokens,
         "temperature": temperature,
-        "messages": messages,
+        "messages": [msg.dict() for msg in messages],
     }
 
     if enableGrounding and any(
-        model == member.value for member in ClaudeModelGrounding
+        model.startswith(member.value) for member in ClaudeModelGrounding
     ):
-        # Build web search tool configuration
         webSearchTool = {
             "type": "web_search_20250305",
             "name": "web_search",
@@ -56,10 +59,8 @@ def runPrompt(
 
     response = client.messages.create(**requestParams)
 
-    textContent: List[str] = []
-
     for block in response.content:
-        if hasattr(block, "text"):
-            textContent.append(block.text)
+        if isinstance(block, TextBlock):
+            textParts.append(block.text)
 
-    return "".join(textContent) if textContent else ""
+    return "".join(textParts)
