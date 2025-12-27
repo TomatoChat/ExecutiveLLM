@@ -34,5 +34,5 @@ dev = [
 root = ["benchmarks/axl-bench"]
 
 [tool.ty.src]
-include = ["src/**/*.py"]
+include = ["*/*.py"]
 exclude = []
