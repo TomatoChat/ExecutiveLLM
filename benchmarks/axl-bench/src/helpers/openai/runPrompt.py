@@ -15,33 +15,40 @@ def runPrompt(
     enableGrounding: bool = False,
 ) -> str:
     """
-    Run a prompt through the OpenAI API.
-
-    Args:
-        client: OpenAI client instance
-        model: Model identifier
-        maxTokens: Maximum tokens to generate
-        temperature: Sampling temperature
-        messages: List of message dictionaries
-        enableGrounding: Enable web search if supported by model
-
-    Returns:
-        Generated text response
+    Run a prompt through the OpenAI Responses API.
     """
+
     requestParams = {
         "model": model,
-        "max_tokens": maxTokens,
+        "max_output_tokens": maxTokens,
         "temperature": temperature,
-        "messages": [msg.to_dict() for msg in messages],
+        "input": [
+            {
+                "role": msg.role,
+                "content": [{"type": "input_text", "text": msg.content}],
+            }
+            for msg in messages
+        ],
     }
 
-    # Enable web search if supported by the model
     if enableGrounding and any(
         model.startswith(member.value) for member in OpenAiModelGrounding
     ):
-        requestParams["tools"] = [{"type": "web_search"}]
-        response = client.chat.completions.create(**requestParams)
-    else:
-        response = client.chat.completions.create(**requestParams)
+        requestParams["tools"] = [
+            {
+                "type": "web_search",
+                "web_search": {},
+            }
+        ]
 
-    return response.choices[0].message.content or ""
+    response = client.responses.create(**requestParams)
+
+    outputText = [
+        part.text
+        for msg in response.output
+        if msg.type == "message"
+        for part in msg.content
+        if part.type == "output_text"
+    ]
+
+    return "".join(outputText)

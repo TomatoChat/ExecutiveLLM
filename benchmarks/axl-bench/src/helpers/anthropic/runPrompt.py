@@ -37,7 +37,7 @@ def runPrompt(
         "model": model,
         "max_tokens": maxTokens,
         "temperature": temperature,
-        "messages": [msg.dict() for msg in messages],
+        "messages": [msg.model_dump() for msg in messages],
     }
 
     if enableGrounding and any(
