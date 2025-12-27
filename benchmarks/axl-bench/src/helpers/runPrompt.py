@@ -1,12 +1,12 @@
 import os
-from typing import Dict, List
+from typing import List
 
 from anthropic import Anthropic
 from dotenv import load_dotenv
 from google import genai
 from openai import OpenAI
 
-from ..models import ClaudeModel, GeminiModel, OpenAiModel
+from ..models import ClaudeModel, GeminiModel, Message, OpenAiModel
 from .anthropic import runPrompt as anthropicRunPrompt
 from .gemini import runPrompt as geminiRunPrompt
 from .openai import runPrompt as openaiRunPrompt
@@ -18,7 +18,7 @@ def runPrompt(
     model: str,
     maxTokens: int,
     temperature: float,
-    messages: List[Dict[str, str]],
+    messages: List[Message],
     enableGrounding: bool = False,
 ) -> str:
     """

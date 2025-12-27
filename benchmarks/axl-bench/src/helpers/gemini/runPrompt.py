@@ -23,25 +23,25 @@ def runPrompt(
         model: Model identifier
         maxTokens: Maximum tokens to generate
         temperature: Sampling temperature
-        messages: List of message dictionaries
+        messages: Text-only messages (role + content)
         enableGrounding: Enable Google Search grounding if supported by model
 
     Returns:
         Generated text response
     """
-    if len(messages) == 1:
-        contents = messages[0].content
-    else:
-        geminiMessages = []
 
-        for msg in messages:
-            role = "user" if msg.role == "user" else "model"
-            geminiMessages.append(
-                types.Content(role=role, parts=[types.Part(text=msg.content)])
+    contents = (
+        messages[0].content
+        if len(messages) == 1
+        else [
+            types.Content(
+                role="user" if msg.role == "user" else "model",
+                parts=[types.Part(text=msg.content)],
             )
-        contents = geminiMessages
+            for msg in messages
+        ]
+    )
 
-    # Build config with grounding if enabled
     if enableGrounding and any(
         model.replace("models/", "").startswith(member.value)
         for member in GeminiModelGrounding
