@@ -30,7 +30,7 @@ jobs:
         run: uv sync --extra dev
 
       - name: Run nbstripout
-        run: find . -name "*.ipynb" -type f | xargs uv run nbstripout --verify
+        run: find . -name "*.ipynb" -type f | xargs -r uv run nbstripout --verify
 
       - name: Run nbcheckorder
-        run: find . -name "*.ipynb" -type f | xargs uv run nbcheckorder
+        run: find . -name "*.ipynb" -type f | xargs -r uv run nbcheckorder
