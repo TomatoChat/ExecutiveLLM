@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0
+    rev: v6.0.0  # align with latest used in docs
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
@@ -17,6 +17,19 @@ repos:
     hooks:
       - id: ruff
         args: ["--fix", "--select=E,F,W"]
+
+  - repo: https://github.com/kynan/nbstripout
+    rev: 0.6.1  # check PyPI / GitHub for latest stable
+    hooks:
+      - id: nbstripout
+        files: "\\.ipynb$"
+        # optional: keep some metadata if needed, see nbstripout docs
+
+  - repo: https://github.com/stefsmeets/nbcheckorder
+    rev: v0.2.0  # check for latest tag
+    hooks:
+      - id: nbcheckorder
+        files: "\\.ipynb$"
 
   - repo: local
     hooks:
