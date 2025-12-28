@@ -5,7 +5,10 @@ from .GeminiModelGrounding import GeminiModelGrounding
 from .Message import Message
 from .OpenAiModel import OpenAiModel
 from .OpenAiModelGrounding import OpenAiModelGrounding
+from .PlayerResult import PlayerResult
 from .PromptContext import PromptContext
+from .ScoreStatistics import ScoreStatistics
+from .TournamentIterationResult import TournamentIterationResult
 
 __all__ = [
     "PromptContext",
@@ -16,4 +19,7 @@ __all__ = [
     "GeminiModelGrounding",
     "OpenAiModelGrounding",
     "Message",
+    "TournamentIterationResult",
+    "PlayerResult",
+    "ScoreStatistics",
 ]
