@@ -4,7 +4,16 @@ from axelrod import Action, Player
 from dotenv import load_dotenv
 
 from ..helpers import runPrompt
-from ..models import ClaudeModel, GeminiModel, Message, OpenAiModel, PromptContext
+from ..models import (
+    ClaudeModel,
+    ClaudeModelGrounding,
+    GeminiModel,
+    GeminiModelGrounding,
+    Message,
+    OpenAiModel,
+    OpenAiModelGrounding,
+    PromptContext,
+)
 
 load_dotenv()
 
@@ -17,7 +26,7 @@ class CompletionLLM(Player):
     def __init__(
         self,
         # Axelrod parameters
-        name: Optional[str] = "CompletionLLM",
+        name: str = "CompletionLLM",
         memoryDepth: Optional[Union[int, float]] = float("inf"),
         stochastic: Optional[bool] = True,
         inspectsSource: Optional[bool] = False,
@@ -30,10 +39,15 @@ class CompletionLLM(Player):
         endProbability: Optional[float] = None,
         # Model parameters
         model: Union[
-            ClaudeModel, OpenAiModel, GeminiModel
+            ClaudeModel,
+            OpenAiModel,
+            GeminiModel,
+            ClaudeModelGrounding,
+            OpenAiModelGrounding,
+            GeminiModelGrounding,
         ] = GeminiModel.GEMINI_2_5_FLASH_LITE,
-        maxTokens: Optional[int] = 1024,
-        temperature: Optional[float] = 1.0,
+        maxTokens: int = 1024,
+        temperature: float = 1.0,
     ):
         super().__init__()
 
@@ -52,7 +66,14 @@ class CompletionLLM(Player):
         self.numTurns: Optional[int] = numTurns
         self.endProbability: Optional[float] = endProbability
         # Model parameters
-        self.model: Union[ClaudeModel, OpenAiModel, GeminiModel] = model
+        self.model: Union[
+            ClaudeModel,
+            OpenAiModel,
+            GeminiModel,
+            ClaudeModelGrounding,
+            OpenAiModelGrounding,
+            GeminiModelGrounding,
+        ] = model
         self.maxTokens: int = maxTokens
         self.temperature: float = temperature
 

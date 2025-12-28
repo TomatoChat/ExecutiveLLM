@@ -1,13 +1,15 @@
-from typing import List, Optional
+from typing import Dict, Optional
 
-from axelrod.action import Action
-from pydantic import BaseModel
+from axelrod import History
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class PromptContext(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
     promptTemplate: str
-    personalHistory: List[Action] = []
-    opponentHistory: List[Action] = []
+    personalHistory: History = Field(default_factory=History)
+    opponentHistory: History = Field(default_factory=History)
     historyLastTurns: Optional[int] = None
     numTurns: Optional[int] = None
     endProbability: Optional[float] = None
@@ -25,13 +27,13 @@ class PromptContext(BaseModel):
         Returns:
             The formatted prompt string
         """
-        variables: dict[str, str] = {}
-        personalHistory: List[Action] = (
+        variables: Dict[str, str] = {}
+        personalHistory: History = (
             self.personalHistory
             if self.historyLastTurns is None
             else self.personalHistory[-self.historyLastTurns :]
         )
-        opponentHistory: List[Action] = (
+        opponentHistory: History = (
             self.opponentHistory
             if self.historyLastTurns is None
             else self.opponentHistory[-self.historyLastTurns :]
