@@ -1,0 +1,36 @@
+name: Notebook Checks
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - "**"
+
+permissions:
+  contents: read
+
+jobs:
+  notebook-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+
+      - name: Install dependencies
+        run: uv sync --extra dev
+
+      - name: Run nbstripout
+        run: find . -name "*.ipynb" -type f | xargs -r uv run nbstripout --verify
+
+      - name: Run nbcheckorder
+        run: find . -name "*.ipynb" -type f | xargs -r uv run nbcheckorder
